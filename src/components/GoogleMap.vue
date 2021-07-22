@@ -1,6 +1,6 @@
 <template>
   <div>
-    <button v-on:click="startTracking">Start tracking</button>
+    <button class="track-btn" v-on:click="startTracking">Start tracking</button>
     <GmapMap
       :center="{ lat: centerCoods[0], lng: centerCoods[1] }"
       :zoom="18"
@@ -94,9 +94,16 @@ export default {
   },
 };
 </script>
-<style scoped>
-.gmap {
-  width: 100%;
-  height: 500px;
+<style scoped lang="scss">
+.track-btn{
+      outline: none;
+    border: none;
+    background: #3d6ca8;
+    color: #fff;
+    height: 40px;
+    width: max-content;
+    padding: 10px 20px;
+    border-radius: 5px;
+    margin-bottom: 1rem;
 }
 </style>
