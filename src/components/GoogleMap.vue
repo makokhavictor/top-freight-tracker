@@ -1,18 +1,22 @@
 <template>
-  <GmapMap
-    :center="{ lat: centerCoods[0], lng: centerCoods[1] }"
-    :zoom="18"
-    map-type-id="roadmap"
-    style="width: 100%; height: 520px"
-  >
-    <GmapMarker
-      ref="myMarker"
-      :position="
-        google && new google.maps.LatLng(currentPosition[0], currentPosition[1])
-      "
-      :icon="markerImage"
-    />
-  </GmapMap>
+  <div>
+    <button v-on:click="startTracking">Start tracking</button>
+    <GmapMap
+      :center="{ lat: centerCoods[0], lng: centerCoods[1] }"
+      :zoom="18"
+      map-type-id="roadmap"
+      style="width: 100%; height: 600px"
+    >
+      <GmapMarker
+        ref="myMarker"
+        :position="
+          google &&
+          new google.maps.LatLng(currentPosition[0], currentPosition[1])
+        "
+        :icon="markerImage"
+      />
+    </GmapMap>
+  </div>
 </template>
 <script>
 import { Vue } from "vue-property-decorator";
@@ -33,15 +37,21 @@ export default {
       centerCoods: [-1.298982, 36.776811],
       currentPosition: [],
       positions: null,
-      markerImage:null
+      markerImage: null,
+      interval:null
     };
   },
   mounted() {
-    this.markerImage = require('../assets/25_freight.png')
+    this.markerImage = require("../assets/25_freight.png");
     this.currentPosition = this.centerCoods;
-    this.pollCoordinates();
   },
   methods: {
+    startTracking(){
+      this.centerCoods = [-1.298982, 36.776811];
+      this.currentPosition = this.centerCoods;
+      clearInterval(this.interval);
+      this.pollCoordinates();
+    },
     pollCoordinates() {
       this.positions = [
         [-1.298982, 36.776811],
@@ -54,21 +64,32 @@ export default {
         [-1.294048, 36.77679],
         [-1.293973, 36.779118],
         [-1.292622, 36.779075],
-        [-1.291844, 36.779049]
+        [-1.291844, 36.779049],
       ];
 
       var count = 0;
-
-      setInterval(()=>{
-        this.currentPosition = this.positions[count];
+      var intermediateGap = 800;
+      var intermediateLat;
+      var intermediateLng;
+      this.interval = setInterval(() => {
+        intermediateLat =
+          (this.positions[count][0] - this.currentPosition[0]) /
+          intermediateGap;
+        intermediateLng =
+          (this.positions[count][1] - this.currentPosition[1]) /
+          intermediateGap;
+        this.currentPosition = [
+          this.positions[count][0] + intermediateLat,
+          this.positions[count][1] + intermediateLng,
+        ];
         this.centerCoods = this.currentPosition;
-       
-        if(count == this.positions.length-1){
-          clearInterval();
-        }else{
-           count++;
+
+        if (count == this.positions.length - 1) {
+          clearInterval(this.interval);
+        } else {
+          count++;
         }
-      },2000);
+      }, 2000);
     },
   },
 };
