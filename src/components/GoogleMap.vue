@@ -44,6 +44,9 @@ export default {
   mounted() {
     this.markerImage = require("../assets/25_freight.png");
     this.currentPosition = this.centerCoods;
+    this.$refs.myMarker.addEventListener('click',()=>{
+      alert("foo");
+    })
   },
   methods: {
     startTracking(){
@@ -68,7 +71,7 @@ export default {
       ];
 
       var count = 0;
-      var intermediateGap = 800;
+      var intermediateGap = 500;
       var intermediateLat;
       var intermediateLng;
       this.interval = setInterval(() => {
@@ -105,5 +108,6 @@ export default {
     padding: 10px 20px;
     border-radius: 5px;
     margin-bottom: 1rem;
+    cursor: pointer;
 }
 </style>
