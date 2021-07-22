@@ -1,7 +1,7 @@
 <template>
   <GmapMap
     :center="{ lat: centerCoods[0], lng: centerCoods[1] }"
-    :zoom="16"
+    :zoom="18"
     map-type-id="roadmap"
     style="width: 100%; height: 520px"
   >
@@ -10,7 +10,7 @@
       :position="
         google && new google.maps.LatLng(currentPosition[0], currentPosition[1])
       "
-      :draggable="true"
+      :icon="markerImage"
     />
   </GmapMap>
 </template>
@@ -32,16 +32,14 @@ export default {
     return {
       centerCoods: [-1.298982, 36.776811],
       currentPosition: [],
-      positions: [],
+      positions: null,
+      markerImage:null
     };
   },
   mounted() {
+    this.markerImage = require('../assets/25_freight.png')
     this.currentPosition = this.centerCoods;
     this.pollCoordinates();
-
-    // setTimeout(() => {
-    //   this.currentPosition = [-1.297459, 36.776747];
-    // }, 3000);
   },
   methods: {
     pollCoordinates() {
@@ -64,9 +62,11 @@ export default {
       setInterval(()=>{
         this.currentPosition = this.positions[count];
         this.centerCoods = this.currentPosition;
-        count++;
-        if(count > this.positions.length){
+       
+        if(count == this.positions.length-1){
           clearInterval();
+        }else{
+           count++;
         }
       },2000);
     },
