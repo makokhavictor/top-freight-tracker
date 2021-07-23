@@ -2,7 +2,7 @@
   <div>
     <button class="track-btn" v-on:click="startTracking">Start tracking</button>
     <gmap-map
-      ref="myMap"
+      ref="mapRef"
       :center="{ lat: centerCoods[0], lng: centerCoods[1] }"
       :zoom="18"
       map-type-id="roadmap"
@@ -48,10 +48,11 @@ export default {
       positions: null,
       markerImage: null,
       interval: null,
-      markerInfoWindow: null,
       infoWindowPos: null,
       infoWinOpen: true,
       infoContent: "",
+      mapInitialized: false,
+      currentAddress:"",
       driverDetails: {
         vehicleInfo: "KAY 747E",
         vehicleSize: "27 tonnes",
@@ -67,6 +68,10 @@ export default {
     };
   },
   mounted() {
+    this.$refs.mapRef.$mapPromise.then(() => {
+      this.mapInitialized = true;
+      this.getAddress();
+    });
     this.markerImage = require("../assets/25_freight.png");
     this.currentPosition = this.centerCoods;
     this.infoContent = this.getInfoWindowContent();
@@ -109,6 +114,7 @@ export default {
           this.positions[count][1] + intermediateLng,
         ];
         this.centerCoods = this.currentPosition;
+        this.infoContent = this.getInfoWindowContent();
 
         if (count == this.positions.length - 1) {
           clearInterval(this.interval);
@@ -117,8 +123,9 @@ export default {
         }
       }, 2000);
     },
-    getInfoWindowContent() {
-      return `
+     getInfoWindowContent() {
+       this.getAddress();
+        return `
         <div class="markerInfo">
           <div class="vehicle-info">${this.driverDetails.vehicleInfo}</div>
           <div class="vehicle-details">
@@ -128,11 +135,24 @@ export default {
           </div>
           <div class="current-location">
           <span>Location:</span>
-          <span>Upperhill,CIC Plaza</span>
+          <span>${this.currentAddress}</span>
           </div>
         </div>
       `;
     },
+    getAddress(){
+      if(this.mapInitialized){
+        const geocoder = new google.maps.Geocoder();
+        geocoder.geocode({location:{lat:this.currentPosition[0],lng:this.currentPosition[1]}})
+        .then((response)=>{
+          if (response.results[0]) {
+            this.currentAddress = response.results[0].formatted_address;
+            console.log(this.currentAddress);
+          }
+        });
+
+      }
+    }
   },
 };
 </script>
