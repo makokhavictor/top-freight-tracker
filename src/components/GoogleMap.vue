@@ -24,6 +24,7 @@
         "
         :icon="markerImage"
       ></gmap-marker>
+      <!-- <DirectionsRenderer travelMode="DRIVING" :origin="origin" :destination="destionation"/> -->
     </gmap-map>
   </div>
 </template>
@@ -31,6 +32,7 @@
 import { Vue } from "vue-property-decorator";
 import * as VueGoogleMaps from "vue2-google-maps";
 const API_KEY = "AIzaSyB9LGGKDb13mSgC1X-m9h0ZnVUlM8STR8A";
+// const API_KEY = "AIzaSyCedNpxsrE_L8ELr6c7wNRZbYR2FMBe03Q";
 Vue.use(VueGoogleMaps, {
   load: {
     key: API_KEY,
@@ -38,9 +40,7 @@ Vue.use(VueGoogleMaps, {
   },
 });
 export default {
-  computed: {
-    google: VueGoogleMaps.gmapApi,
-  },
+  
   data() {
     return {
       centerCoods: [-1.298982, 36.776811],
@@ -67,14 +67,26 @@ export default {
       },
     };
   },
+
+  computed: {
+    google: VueGoogleMaps.gmapApi,
+    origin: function(){
+      return this.positions[0]
+    },
+    destination:function(){
+      return this.positions[this.positions.length-1];
+    }
+
+  },
   mounted() {
+    this.currentPosition = this.centerCoods;
     this.$refs.mapRef.$mapPromise.then(() => {
       this.mapInitialized = true;
       this.getAddress();
     });
     this.markerImage = require("../assets/25_freight.png");
-    this.currentPosition = this.centerCoods;
-    this.infoContent = this.getInfoWindowContent();
+    
+    
   },
   methods: {
     startTracking() {
@@ -147,6 +159,7 @@ export default {
         .then((response)=>{
           if (response.results[0]) {
             this.currentAddress = response.results[0].formatted_address;
+            this.infoContent = this.getInfoWindowContent();
             console.log(this.currentAddress);
           }
         });
