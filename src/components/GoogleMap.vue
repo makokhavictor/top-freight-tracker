@@ -1,21 +1,30 @@
 <template>
   <div>
     <button class="track-btn" v-on:click="startTracking">Start tracking</button>
-    <GmapMap
+    <gmap-map
+      ref="myMap"
       :center="{ lat: centerCoods[0], lng: centerCoods[1] }"
       :zoom="18"
       map-type-id="roadmap"
       style="width: 100%; height: 600px"
     >
-      <GmapMarker
+      <gmap-info-window
+        :options="infoOptions"
+        :position="{ lat: currentPosition[0], lng: currentPosition[1] }"
+        :opened="infoWinOpen"
+        @closeclick="infoWinOpen = false"
+      >
+        <div v-html="infoContent"></div>
+      </gmap-info-window>
+      <gmap-marker
         ref="myMarker"
         :position="
           google &&
           new google.maps.LatLng(currentPosition[0], currentPosition[1])
         "
         :icon="markerImage"
-      />
-    </GmapMap>
+      ></gmap-marker>
+    </gmap-map>
   </div>
 </template>
 <script>
@@ -38,18 +47,32 @@ export default {
       currentPosition: [],
       positions: null,
       markerImage: null,
-      interval:null
+      interval: null,
+      markerInfoWindow: null,
+      infoWindowPos: null,
+      infoWinOpen: true,
+      infoContent: "",
+      driverDetails: {
+        vehicleInfo: "KAY 747E",
+        vehicleSize: "27 tonnes",
+        cargoType: "Flatbed",
+        goodsType: "Rice",
+      },
+      infoOptions: {
+        pixelOffset: {
+          width: 0,
+          height: -35,
+        },
+      },
     };
   },
   mounted() {
     this.markerImage = require("../assets/25_freight.png");
     this.currentPosition = this.centerCoods;
-    this.$refs.myMarker.addEventListener('click',()=>{
-      alert("foo");
-    })
+    this.infoContent = this.getInfoWindowContent();
   },
   methods: {
-    startTracking(){
+    startTracking() {
       this.centerCoods = [-1.298982, 36.776811];
       this.currentPosition = this.centerCoods;
       clearInterval(this.interval);
@@ -94,20 +117,43 @@ export default {
         }
       }, 2000);
     },
+    getInfoWindowContent() {
+      return `
+        <div class="markerInfo">
+          <div class="vehicle-info">${this.driverDetails.vehicleInfo}</div>
+          <div class="vehicle-details">
+            <span>${this.driverDetails.vehicleSize}</span>
+            <span>${this.driverDetails.cargoType}</span>
+            <span>${this.driverDetails.goodsType}</span>
+          </div>
+          <div class="current-location">
+          <span>Location:</span>
+          <span>Upperhill,CIC Plaza</span>
+          </div>
+        </div>
+      `;
+    },
   },
 };
 </script>
 <style scoped lang="scss">
-.track-btn{
-      outline: none;
-    border: none;
-    background: #3d6ca8;
-    color: #fff;
-    height: 40px;
-    width: max-content;
-    padding: 10px 20px;
-    border-radius: 5px;
-    margin-bottom: 1rem;
-    cursor: pointer;
+.track-btn {
+  outline: none;
+  border: none;
+  background: #3d6ca8;
+  color: #fff;
+  height: 40px;
+  width: max-content;
+  padding: 10px 20px;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+  cursor: pointer;
+}
+.vehicle-info {
+  font-weight: 500;
+}
+.vehicle-details > span {
+  border-right: 1px solid grey;
+  padding-right: 3px;
 }
 </style>
