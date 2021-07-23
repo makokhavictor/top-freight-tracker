@@ -24,10 +24,19 @@
         "
         :icon="markerImage"
       ></gmap-marker>
-      <DirectionsRenderer 
-        travelMode="DRIVING" 
-        :origin="positions && new google.maps.LatLng(positions[0][0], positions[0][1])" 
-        :destination="positions && new google.maps.LatLng(positions[positions.length-1][0], positions[positions.length-1][1])"/>
+      <DirectionsRenderer
+        travelMode="DRIVING"
+        :origin="
+          positions && new google.maps.LatLng(positions[0][0], positions[0][1])
+        "
+        :destination="
+          positions &&
+          new google.maps.LatLng(
+            positions[positions.length - 1][0],
+            positions[positions.length - 1][1]
+          )
+        "
+      />
     </gmap-map>
   </div>
 </template>
@@ -35,7 +44,7 @@
 import { Vue } from "vue-property-decorator";
 import * as VueGoogleMaps from "vue2-google-maps";
 import DirectionsRenderer from "@/components/DirectionsRenderer";
-import { formatDistance } from 'date-fns';
+import { formatDistance } from "date-fns";
 const API_KEY = "AIzaSyB9LGGKDb13mSgC1X-m9h0ZnVUlM8STR8A";
 // const API_KEY = "AIzaSyCedNpxsrE_L8ELr6c7wNRZbYR2FMBe03Q";
 Vue.use(VueGoogleMaps, {
@@ -45,7 +54,7 @@ Vue.use(VueGoogleMaps, {
   },
 });
 export default {
-  components: {DirectionsRenderer},
+  components: { DirectionsRenderer },
   computed: {
     google: VueGoogleMaps.gmapApi,
     // waypoints:function(){
@@ -63,8 +72,8 @@ export default {
       infoWinOpen: true,
       infoContent: "",
       mapInitialized: false,
-      currentAddress:"",
-      lastUpdatedTime:null,
+      currentAddress: "",
+      lastUpdatedTime: null,
       driverDetails: {
         vehicleInfo: "KAY 747E",
         vehicleSize: "27 tonnes",
@@ -80,7 +89,6 @@ export default {
     };
   },
 
-  
   mounted() {
     this.currentPosition = this.centerCoods;
     this.$refs.mapRef.$mapPromise.then(() => {
@@ -89,8 +97,6 @@ export default {
       this.lastUpdatedTime = Date.now();
     });
     this.markerImage = require("../assets/25_freight.png");
-    
-    
   },
   methods: {
     startTracking() {
@@ -141,10 +147,12 @@ export default {
         }
       }, 2000);
     },
-     getInfoWindowContent() {
-       this.getAddress();
-       const timeDiff = formatDistance(this.lastUpdatedTime, new Date(), { addSuffix: true });
-        return `
+    getInfoWindowContent() {
+      this.getAddress();
+      const timeDiff = formatDistance(this.lastUpdatedTime, new Date(), {
+        addSuffix: true,
+      });
+      return `
         <div class="markerInfo">
           <div class="vehicle-info">${this.driverDetails.vehicleInfo}</div>
           <div class="vehicle-details">
@@ -162,20 +170,25 @@ export default {
         </div>
       `;
     },
-    getAddress(){
-      if(this.mapInitialized){
+    getAddress() {
+      if (this.mapInitialized) {
         const geocoder = new google.maps.Geocoder();
-        geocoder.geocode({location:{lat:this.currentPosition[0],lng:this.currentPosition[1]}})
-        .then((response)=>{
-          if (response.results[0]) {
-            this.currentAddress = response.results[0].formatted_address;
-            this.infoContent = this.getInfoWindowContent();
-            console.log(this.currentAddress);
-          }
-        });
-
+        geocoder
+          .geocode({
+            location: {
+              lat: this.currentPosition[0],
+              lng: this.currentPosition[1],
+            },
+          })
+          .then((response) => {
+            if (response.results[0]) {
+              this.currentAddress = response.results[0].formatted_address;
+              this.infoContent = this.getInfoWindowContent();
+              console.log(this.currentAddress);
+            }
+          });
       }
-    }
+    },
   },
 };
 </script>
@@ -197,9 +210,10 @@ export default {
 }
 .vehicle-details > span {
   border-right: 1px solid grey;
-  padding-right: 3px;
+  padding-right: 20px;
+  padding-left: 3px;
 }
-.location-updated >span{
-  color:#00000066;
+.location-updated > span {
+  color: #00000066;
 }
 </style>
