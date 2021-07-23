@@ -5,7 +5,13 @@ import router from './router';
 import store from './store';
 
 Vue.config.productionTip = false;
+// @ts-ignore
+import VueTimeago from 'vue-timeago'
 
+Vue.use(VueTimeago, {
+  name: 'Timeago', // Component name, `Timeago` by default
+  locale: 'en', // Default locale
+});
 new Vue({
   router,
   store,

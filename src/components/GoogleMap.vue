@@ -35,6 +35,7 @@
 import { Vue } from "vue-property-decorator";
 import * as VueGoogleMaps from "vue2-google-maps";
 import DirectionsRenderer from "@/components/DirectionsRenderer";
+import { formatDistance } from 'date-fns';
 const API_KEY = "AIzaSyB9LGGKDb13mSgC1X-m9h0ZnVUlM8STR8A";
 // const API_KEY = "AIzaSyCedNpxsrE_L8ELr6c7wNRZbYR2FMBe03Q";
 Vue.use(VueGoogleMaps, {
@@ -47,6 +48,9 @@ export default {
   components: {DirectionsRenderer},
   computed: {
     google: VueGoogleMaps.gmapApi,
+    // waypoints:function(){
+    //   return [[-1.297459, 36.776747]]
+    // }
   },
   data() {
     return {
@@ -60,6 +64,7 @@ export default {
       infoContent: "",
       mapInitialized: false,
       currentAddress:"",
+      lastUpdatedTime:null,
       driverDetails: {
         vehicleInfo: "KAY 747E",
         vehicleSize: "27 tonnes",
@@ -81,6 +86,7 @@ export default {
     this.$refs.mapRef.$mapPromise.then(() => {
       this.mapInitialized = true;
       this.getAddress();
+      this.lastUpdatedTime = Date.now();
     });
     this.markerImage = require("../assets/25_freight.png");
     
@@ -109,7 +115,7 @@ export default {
       ];
 
       var count = 0;
-      var intermediateGap = 500;
+      var intermediateGap = 100;
       var intermediateLat;
       var intermediateLng;
       this.interval = setInterval(() => {
@@ -126,6 +132,8 @@ export default {
         this.centerCoods = this.currentPosition;
         this.infoContent = this.getInfoWindowContent();
 
+        this.lastUpdatedTime = Date.now();
+
         if (count == this.positions.length - 1) {
           clearInterval(this.interval);
         } else {
@@ -135,6 +143,7 @@ export default {
     },
      getInfoWindowContent() {
        this.getAddress();
+       const timeDiff = formatDistance(this.lastUpdatedTime, new Date(), { addSuffix: true });
         return `
         <div class="markerInfo">
           <div class="vehicle-info">${this.driverDetails.vehicleInfo}</div>
@@ -146,6 +155,9 @@ export default {
           <div class="current-location">
           <span>Location:</span>
           <span>${this.currentAddress}</span>
+          </div>
+          <div class="location-updated">
+            <span>Location updated </span><span> ${timeDiff}</span>
           </div>
         </div>
       `;
@@ -167,7 +179,7 @@ export default {
   },
 };
 </script>
-<style scoped lang="scss">
+<style  lang="scss">
 .track-btn {
   outline: none;
   border: none;
@@ -186,5 +198,8 @@ export default {
 .vehicle-details > span {
   border-right: 1px solid grey;
   padding-right: 3px;
+}
+.location-updated >span{
+  color:#00000066;
 }
 </style>

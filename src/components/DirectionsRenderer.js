@@ -14,8 +14,11 @@ export default MapElementFactory({
   props: {
     origin: { type: Object },
     destination: { type: Object },
-    travelMode: { type: String }
+    travelMode: { type: String },
+    waypoints:{type:Array}
   },
+//   TODO
+// CREATE WAYPOINTS FOR THE ROUTES
 
   afterCreate(directionsRenderer) {
     let directionsService = new window.google.maps.DirectionsService();
@@ -24,13 +27,13 @@ export default MapElementFactory({
       () => [this.origin, this.destination, this.travelMode],
       () => {
         let { origin, destination, travelMode } = this;
-        if (!origin || !destination || !travelMode) return;
+        if (!origin || !destination || !travelMode ) return;
 
         directionsService.route(
           {
             origin,
             destination,
-            travelMode
+            travelMode,
           },
           (response, status) => {
             if (status !== "OK") return;
