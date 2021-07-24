@@ -1,6 +1,10 @@
 <template>
   <div>
-    <button class="track-btn" v-on:click="startTracking">Start tracking</button>
+    <button
+      class="track-btn"
+      v-on:click="handleTracking"
+      v-text="tracking ? 'Cancel Tracking' : 'Start Tracking'"
+    ></button>
     <gmap-map
       ref="mapRef"
       :center="{ lat: centerCoods[0], lng: centerCoods[1] }"
@@ -86,6 +90,7 @@ export default {
           height: -35,
         },
       },
+      tracking: false,
     };
   },
 
@@ -112,19 +117,26 @@ export default {
     this.markerImage = require("../assets/25_freight.png");
   },
   methods: {
-    startTracking() {
+    handleTracking() {
       this.centerCoods = this.currentPosition = [-1.298982, 36.776811];
-      // clearInterval(this.interval);
-      this.pollCoordinates();
+      clearInterval(this.interval);
+      if(this.tracking){
+        this.tracking = !this.tracking;
+      }else{
+        this.pollCoordinates();
+      }
     },
+
     pollCoordinates() {
+      this.tracking = true;
       var count = 1;
-      
+
       this.interval = setInterval(() => {
         this.animateMarker(this.positions[count], this.currentPosition);
         this.infoContent = this.getInfoWindowContent();
         this.lastUpdatedTime = Date.now();
         if (count == this.positions.length - 1) {
+          this.tracking = false;
           clearInterval(this.interval);
         } else {
           count++;
@@ -136,16 +148,17 @@ export default {
       let miniDelay = 5;
       let latDelta = (endPosition[0] - startPosition[0]) / steps;
       let lngDelta = (endPosition[1] - startPosition[1]) / steps;
-      
 
       for (var i = 0; i < steps; i++) {
         (() => {
           let intermediateLat = startPosition[0] + i * latDelta;
           let intermediateLng = startPosition[1] + i * lngDelta;
-          setTimeout(()=>{
-            this.centerCoods = this.currentPosition = [intermediateLat, intermediateLng];
-            
-          },miniDelay);
+          setTimeout(() => {
+            this.centerCoods = this.currentPosition = [
+              intermediateLat,
+              intermediateLng,
+            ];
+          }, miniDelay);
         })();
       }
     },
