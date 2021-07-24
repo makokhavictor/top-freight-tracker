@@ -119,49 +119,27 @@ export default {
     },
     pollCoordinates() {
       var count = 1;
-      this.animateMarker(this.positions[count], this.currentPosition);
-      this.infoContent = this.getInfoWindowContent();
-
-      this.lastUpdatedTime = Date.now();
-      // var intermediateGap = 100;
-      // var intermediateLat;
-      // var intermediateLng;
-      // this.interval = setInterval(() => {
-      //   // intermediateLat =
-      //   //   (this.positions[count][0] - this.currentPosition[0]) /
-      //   //   intermediateGap;
-      //   // intermediateLng =
-      //   //   (this.positions[count][1] - this.currentPosition[1]) /
-      //   //   intermediateGap;
-      //   // this.currentPosition = [
-      //   //   this.positions[count][0] + intermediateLat,
-      //   //   this.positions[count][1] + intermediateLng,
-      //   // ];
-      //   // this.centerCoods = this.currentPosition;
-
-      //   if (count == this.positions.length - 1) {
-      //     clearInterval(this.interval);
-      //   } else {
-      //     count++;
-      //   }
-      // }, 5000);
+      
+      this.interval = setInterval(() => {
+        this.animateMarker(this.positions[count], this.currentPosition);
+        this.infoContent = this.getInfoWindowContent();
+        this.lastUpdatedTime = Date.now();
+        if (count == this.positions.length - 1) {
+          clearInterval(this.interval);
+        } else {
+          count++;
+        }
+      }, 5000);
     },
     animateMarker(endPosition, startPosition, count = 0) {
       let steps = 600;
       let miniDelay = 5;
       let latDelta = (endPosition[0] - startPosition[0]) / steps;
       let lngDelta = (endPosition[1] - startPosition[1]) / steps;
-      // console.log(latDelta,lngDelta,endPosition,startPosition);
-
-      // let intermediateLat = startPosition[0] + latDelta;
-      // let intermediateLng = startPosition[1] + lngDelta;
-
-      // this.currentPosition = [intermediateLat, intermediateLng];
-      // console.log([intermediateLat, intermediateLng], this.currentPosition);
+      
 
       for (var i = 0; i < steps; i++) {
         (() => {
-          console.log("moving");
           let intermediateLat = startPosition[0] + i * latDelta;
           let intermediateLng = startPosition[1] + i * lngDelta;
           setTimeout(()=>{
@@ -170,17 +148,6 @@ export default {
           },miniDelay);
         })();
       }
-
-      // if (count != steps) {
-      //   let nextInterMediateLat = this.currentPosition[0] + latDelta;
-      //   let nextInterMediateLng = this.currentPosition[1] + lngDelta;
-      //   count++;
-      //   this.animateMarker(
-      //     [nextInterMediateLat, nextInterMediateLng],
-      //     this.currentPosition,
-      //     count
-      //   );
-      // }
     },
     getInfoWindowContent() {
       this.getAddress();
