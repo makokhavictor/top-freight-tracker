@@ -1,10 +1,21 @@
 <template>
-  <div>
+  <div class="container">
     <button
       class="track-btn"
       v-on:click="handleTracking"
       v-text="tracking ? 'Cancel Tracking' : 'Start Tracking'"
     ></button>
+    <button
+      class="track-btn"
+      v-on:click="driverSwitch"
+      v-text="'Simulate driver switch'"
+    ></button>
+    <button
+      class="track-btn warn"
+      v-on:click="resetMarker"
+      v-text="'Reset'"
+    ></button>
+    <p v-text="status"></p>
     <gmap-map
       ref="mapRef"
       :center="{ lat: centerCoods[0], lng: centerCoods[1] }"
@@ -21,7 +32,6 @@
         <div v-html="infoContent"></div>
       </gmap-info-window>
       <gmap-marker
-        ref="myMarker"
         :position="
           google &&
           new google.maps.LatLng(currentPosition[0], currentPosition[1])
@@ -91,6 +101,7 @@ export default {
         },
       },
       tracking: false,
+      status:''
     };
   },
 
@@ -125,6 +136,13 @@ export default {
       }else{
         this.pollCoordinates();
       }
+    },
+
+    resetMarker(){
+      this.driverDetails.vehicleInfo = 'KAY 747E';
+      this.centerCoods = this.currentPosition = [-1.298982, 36.776811];
+      clearInterval(this.interval);
+      this.tracking = false;
     },
 
     pollCoordinates() {
@@ -204,6 +222,26 @@ export default {
           });
       }
     },
+    driverSwitch(){
+      console.log("foo");
+      // Position driver A at the desired location
+      const newDriverALocation = [-1.300355, 36.773850];
+      const driverBLocation = [-1.291879, 36.778389];
+      this.status = "Switching driver A to new position";
+      this.animateMarker(newDriverALocation,this.currentPosition);
+      this.infoContent = this.getInfoWindowContent();
+      this.lastUpdatedTime = Date.now();
+
+      setTimeout(()=>{
+        this.status  = "Transitioning to driver B";
+        this.driverDetails.vehicleInfo = "KAD 432E";
+        this.animateMarker(driverBLocation,this.currentPosition);
+        this.infoContent = this.getInfoWindowContent();
+        this.lastUpdatedTime = Date.now();
+
+        this.status("Done");
+      },5000);
+    }
   },
 };
 </script>
@@ -219,6 +257,11 @@ export default {
   border-radius: 5px;
   margin-bottom: 1rem;
   cursor: pointer;
+  margin-right: 10px;
+}
+
+.track-btn.warn{
+  background:orangered;
 }
 .vehicle-info {
   font-weight: 500;
