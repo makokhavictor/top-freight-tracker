@@ -59,11 +59,10 @@ import { Vue } from "vue-property-decorator";
 import * as VueGoogleMaps from "vue2-google-maps";
 import DirectionsRenderer from "@/components/DirectionsRenderer";
 import { formatDistance } from "date-fns";
-const API_KEY = "AIzaSyB9LGGKDb13mSgC1X-m9h0ZnVUlM8STR8A";
-// const API_KEY = "AIzaSyCedNpxsrE_L8ELr6c7wNRZbYR2FMBe03Q";
+console.log(process.env.VUE_APP_API_KEY);
 Vue.use(VueGoogleMaps, {
   load: {
-    key: API_KEY,
+    key: process.env.API_KEY,
     libraries: "places", // This is required if you use the Autocomplete plugin
   },
 });
