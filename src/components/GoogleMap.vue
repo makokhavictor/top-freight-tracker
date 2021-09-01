@@ -59,7 +59,6 @@ import { Vue } from "vue-property-decorator";
 import * as VueGoogleMaps from "vue2-google-maps";
 import DirectionsRenderer from "@/components/DirectionsRenderer";
 import { formatDistance } from "date-fns";
-console.log(process.env.VUE_APP_API_KEY);
 Vue.use(VueGoogleMaps, {
   load: {
     key: process.env.API_KEY,
